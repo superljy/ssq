@@ -1,4 +1,5 @@
 const fetch = require('node-fetch');
+const fs = require('fs');
 
 fetch('http://apis.juhe.cn/lottery/history?key=28105e60cccc2aaeb15e662059f507ab&lottery_id=ssq&page_size=50&page=1')
     .then(response => {
@@ -26,7 +27,10 @@ fetch('http://apis.juhe.cn/lottery/history?key=28105e60cccc2aaeb15e662059f507ab&
         let max6 = findMax(red6);
         let maxBlue = findMax(blues);
 
-        console.log(max1, max2, max3, max4, max5, max6, maxBlue);
+        fs.writeFile('lottery_numbers.txt', `红球:${max1},${max2},${max3},${max4},${max5},${max6} 蓝球:${maxBlue}`, (err) => {
+            if (err) throw err;
+            console.log('done!');
+        })
     });
 
 function balls(arr) {
