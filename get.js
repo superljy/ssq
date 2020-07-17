@@ -8,31 +8,31 @@ fetch('http://apis.juhe.cn/lottery/history?key=28105e60cccc2aaeb15e662059f507ab&
     .then(res => {
         let datas = res.result.lotteryResList;
         let lottery_res = [];
+        let finalReds = [];
         for (let i = 0; i < datas.length; i++) {
             lottery_res.push(datas[i].lottery_res.split(','));
         }
         let blues = balls(lottery_res);
-        let red6 = balls(lottery_res);
-        let red5 = balls(lottery_res);
-        let red4 = balls(lottery_res);
-        let red3 = balls(lottery_res);
-        let red2 = balls(lottery_res);
-        let red1 = balls(lottery_res);
 
-        let max1 = findMax(red1);
-        let max2 = findMax(red2);
-        let max3 = findMax(red3);
-        let max4 = findMax(red4);
-        let max5 = findMax(red5);
-        let max6 = findMax(red6);
-        let maxBlue = findMax(blues);
+        let newLottery = reduceDimension(lottery_res);
 
-        fs.writeFile('lottery_numbers.txt', `红球:${max1},${max2},${max3},${max4},${max5},${max6} 蓝球:${maxBlue}`, (err) => {
+        for (let i = 0; i < 7; i++) {
+            findMaxRed(newLottery, finalReds);
+        }
+
+        let maxBlue = findMaxBlue(blues);
+
+        finalReds.sort((a, b) => {
+            return a - b;
+        })
+
+        fs.writeFile('lottery_numbers.txt', `${Number(datas[0].lottery_no)+1}期推荐: 红球 : ${finalReds} , 蓝球 : ${maxBlue}`, (err) => {
             if (err) throw err;
             console.log('done!');
         })
     });
 
+//截取蓝球
 function balls(arr) {
     let newBalls = [];
     for (let i = 0; i < arr.length; i++) {
@@ -41,7 +41,49 @@ function balls(arr) {
     return newBalls;
 }
 
-function findMax(arr) {
+//二维数组降维
+function reduceDimension(arr) {
+    let newArr = [];
+    for (let i = 0; i < arr.length; i++) {
+        for (let j = 0; j < arr[i].length; j++) {
+            newArr.push(arr[i][j]);
+        }
+    }
+    return newArr;
+}
+
+//找出出现最多的红球
+function findMaxRed(arr, redArr) {
+    let hash = {};
+    let maxName = null;
+    let maxNum = 0;
+    for (let i = 0; i < arr.length; i++) {
+        if (!hash[arr[i]]) {
+            hash[arr[i]] = 1;
+        } else {
+            hash[arr[i]]++
+        }
+        if (hash[arr[i]] > maxNum) {
+            maxName = arr[i];
+            maxNum = hash[arr[i]]
+        }
+    }
+    redArr.push(maxName);
+    maxRedOne(arr, maxName);
+}
+
+//每次找到最多的一个红球后 将其在数组中删除 以找出下一个最多的红球
+function maxRedOne(arr, maxName) {
+    arr.forEach(item => {
+        if (item === maxName) {
+            let index = arr.indexOf(item);
+            arr.splice(index, 1);
+        }
+    });
+}
+
+//找出最多的蓝球
+function findMaxBlue(arr) {
     let hash = {};
     let maxName = null;
     let maxNum = 0;
