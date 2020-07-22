@@ -1,6 +1,6 @@
 {
   "name": "ssq",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "update get.js",
   "main": "index.js",
   "scripts": {
@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^8.2.0",
     "node-fetch": "^2.6.0"
   }
 }
