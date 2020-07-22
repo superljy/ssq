@@ -1,35 +1,40 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 
-fetch('http://apis.juhe.cn/lottery/history?key=28105e60cccc2aaeb15e662059f507ab&lottery_id=ssq&page_size=50&page=1')
-    .then(response => {
-        return response.json()
+let ssqFetch = async () => {
+    let response = await fetch('http://apis.juhe.cn/lottery/history?key=28105e60cccc2aaeb15e662059f507ab&lottery_id=ssq&page_size=50&page=1');
+    return await response.json();
+}
+
+//data就是ssqFetch函数执行返回的promise对象
+ssqFetch().then((data) => {
+    let lotteryList = data.result.lotteryResList;
+    let lottery_res = [];
+    let finalReds = [];
+    for (let i = 0; i < lotteryList.length; i++) {
+        lottery_res.push(lotteryList[i].lottery_res.split(','));
+    }
+    let blues = balls(lottery_res);
+
+    let newLottery = reduceDimension(lottery_res);
+
+    for (let i = 0; i < 7; i++) {
+        findMaxRed(newLottery, finalReds);
+    }
+
+    let maxBlue = findMaxBlue(blues);
+
+    finalReds.sort((a, b) => {
+        return a - b;
     })
-    .then(res => {
-        let datas = res.result.lotteryResList;
-        let lottery_res = [];
-        let finalReds = [];
-        for (let i = 0; i < datas.length; i++) {
-            lottery_res.push(datas[i].lottery_res.split(','));
-        }
-        let blues = balls(lottery_res);
 
-        let newLottery = reduceDimension(lottery_res);
-
-        for (let i = 0; i < 7; i++) {
-            findMaxRed(newLottery, finalReds);
-        }
-
-        let maxBlue = findMaxBlue(blues);
-
-        finalReds.sort((a, b) => {
-            return a - b;
-        })
-
-        fs.writeFile('lottery_numbers.txt', `${Number(datas[0].lottery_no)+1}期推荐: 红球 : ${finalReds} , 蓝球 : ${maxBlue}`, (err) => {
-            if (err) throw err;
-            console.log('done!');
-        })
+    fs.writeFile('lottery_numbers.txt', `${Number(lotteryList[0].lottery_no) + 1}期推荐: 红球 : ${finalReds} , 蓝球 : ${maxBlue}`, (err) => {
+        if (err) throw err;
+        console.log('done!');
+    })
+})
+    .catch((e) => {
+        console.log(e);
     });
 
 //截取蓝球
