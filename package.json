@@ -1,7 +1,7 @@
 {
   "name": "ssq",
-  "version": "1.0.4",
-  "description": "improve sceening for red balls",
+  "version": "1.0.5",
+  "description": "update get.js",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
