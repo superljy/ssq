@@ -5,7 +5,7 @@ const env = require('dotenv');
 env.config();
 
 let ssqFetch = async () => {
-    let response = await fetch('http://apis.juhe.cn/lottery/history?key=28105e60cccc2aaeb15e662059f507ab&lottery_id=ssq&page_size=50&page=1');
+    let response = await fetch(`http://apis.juhe.cn/lottery/history?key=${process.env.KEY}&lottery_id=ssq&page_size=50&page=1`);
     return await response.json();
 }
 
@@ -18,7 +18,7 @@ ssqFetch().then((data) => {
     //这两个为保存最后筛选出来的红球和蓝球
     let finalReds = [];
     let finalBlues = [];
-    
+
     for (let i = 0; i < lotteryList.length; i++) {
         lottery_res.push(lotteryList[i].lottery_res.split(','));
     }
@@ -34,8 +34,8 @@ ssqFetch().then((data) => {
 
     //蓝球
     let blueTimes = process.env.BLUE_TIMES;
-    for(let i = 0; i < blueTimes; i++) {
-        findMax(blues,finalBlues);
+    for (let i = 0; i < blueTimes; i++) {
+        findMax(blues, finalBlues);
     }
 
     //红蓝排序
@@ -76,7 +76,7 @@ function reduceDimension(arr) {
     return newArr;
 }
 
-//找出出现最多的红球
+//找出出现最多的红球/蓝球
 function findMax(arr, finalArr) {
     let hash = {};
     let maxName = null;
@@ -96,7 +96,7 @@ function findMax(arr, finalArr) {
     maxOne(arr, maxName);
 }
 
-//每次找到最多的一个红球后 将其在数组中删除 以找出下一个最多的红球
+//每次找到最多的一个红/蓝球后 将其在数组中删除 以找出下一个最多的红/蓝球
 function maxOne(arr, maxName) {
     arr.forEach(item => {
         if (item === maxName) {
@@ -104,23 +104,4 @@ function maxOne(arr, maxName) {
             arr.splice(index, 1);
         }
     });
-}
-
-//找出最多的蓝球
-function findMaxBlue(arr,blueArr) {
-    let hash = {};
-    let maxName = null;
-    let maxNum = 0;
-    for (let i = 0; i < arr.length; i++) {
-        if (!hash[arr[i]]) {
-            hash[arr[i]] = 1;
-        } else {
-            hash[arr[i]]++
-        }
-        if (hash[arr[i]] > maxNum) {
-            maxName = arr[i];
-            maxNum = hash[arr[i]]
-        }
-    }
-    return maxName;
 }
