@@ -1,7 +1,7 @@
 {
   "name": "ssq",
-  "version": "1.0.7",
-  "description": "update get.js restore search key",
+  "version": "1.0.8",
+  "description": "add dlt script",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
